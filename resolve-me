@@ -1,12 +1,18 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
 
-get '/' => sub {
+sub get_remote_ip {
     my $controller = shift;
+    my $as_json    = shift;
+
     my $ip = $controller->req->headers->header('X-Real-IP') || 
-             $controller->tx->remote_address;
+             $controller->tx->remote_address ||
+             '0.0.0.0';
     
-    $controller->render(text => $ip);
-};
+    $controller->render( $as_json ? (json => {ip => $ip}) : (text => $ip) );
+}
+
+get '/'        => sub { get_remote_ip shift };
+get '/as.json' => sub { get_remote_ip shift, 1 };
 
 app->start;
