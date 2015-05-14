@@ -1,0 +1,12 @@
+#!/usr/bin/env perl
+use Mojolicious::Lite;
+
+get '/' => sub {
+    my $controller = shift;
+    my $ip = $controller->req->headers->header('X-Real-IP') || 
+             $controller->tx->remote_address;
+    
+    $controller->render(text => $ip);
+};
+
+app->start;
